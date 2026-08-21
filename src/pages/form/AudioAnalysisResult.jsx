@@ -32,10 +32,17 @@ const AnalysisReport = ({ result }) => {
   if (!result) return null;
   const items = flattenObject(result);
 
-  return (
+    return (
     <div className="report-container">
+      <style>{`@media print { .no-print { display: none !important; } }`}</style>
+      <button
+        className="no-print"
+        onClick={() => window.print()}
+        style={{ display: "block", margin: "0 auto 20px", padding: "10px 24px", borderRadius: 8, cursor: "pointer" }}
+      >
+        Save as PDF
+      </button>
       <h2 className="report-title">Voice Analysis Report</h2>
-
       <div className="report-grid">
         {items.map((item, i) => (
           <div className="report-card" key={i}>
