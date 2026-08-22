@@ -34,6 +34,48 @@ const AnalysisReport = ({ result }) => {
 
   return (
     <div className="report-container">
+       <style>{`
+          @media print {
+            @page { size: A4; margin: 14mm; }
+            html, body { height: auto !important; overflow: visible !important; }
+            body * { visibility: hidden !important; }
+            .report-container, .report-container * { visibility: visible !important; }
+            .report-container {
+              position: absolute !important;
+              left: 0 !important; top: 0 !important;
+              width: 100% !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff !important;
+            }
+            .report-container * { color: #0a2536 !important; }
+            .report-title { color: #0090b8 !important; }
+            .report-card {
+              border: 1px solid #cceef7 !important;
+              box-shadow: none !important;
+              page-break-inside: avoid !important;
+            }
+            .no-print { display: none !important; }
+          }
+        `}</style>
+        <button
+          className="no-print"
+          onClick={() => window.print()}
+          style={{
+            display: "block",
+            margin: "0 auto 24px",
+            padding: "12px 28px",
+            borderRadius: 24,
+            border: "none",
+            background: "#8feaff",
+            color: "#0a2536",
+            fontSize: "16px",
+            fontWeight: 600,
+            cursor: "pointer"
+          }}
+        >
+          Save as PDF
+        </button>
       <h2 className="report-title">Voice Analysis Report</h2>
 
       <div className="report-grid">
