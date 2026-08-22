@@ -317,6 +317,64 @@ const DigitalFootprint = () => {
       </section>
       {analysisResult && (
         <div className="footprint-result-container" ref={resultRef}>
+                                                 <style>{`
+            @media print {
+              @page { size: A4; margin: 14mm; }
+              html, body {
+                height: auto !important;
+                overflow: visible !important;
+              }
+              .footprint-root, .footprint-section, .footprint-header, .footprint-card-row, .footprint-form {
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+              }
+              body * { visibility: hidden !important; }
+              .footprint-result-container, .footprint-result-container * { visibility: visible !important; }
+              .footprint-result-container {
+                position: absolute !important;
+                left: 0 !important; top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+                gap: 20px !important;
+              }
+              .footprint-result-header {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 32px !important;
+                page-break-inside: avoid !important;
+              }
+              .footprint-risk-circle {
+                width: 150px !important;
+                height: 150px !important;
+                border-color: #0090b8 !important;
+              }
+              .footprint-result-container * { color: #0a2536 !important; }
+              .footprint-result-title,
+              .footprint-result-notes h3,
+              .footprint-risk-label,
+              .footprint-risk-score,
+              .footprint-report-label { color: #0090b8 !important; }
+              .footprint-result-notes {
+                background: #f2fbff !important;
+                border: 1px solid #cceef7 !important;
+                page-break-inside: avoid !important;
+              }
+              .no-print { display: none !important; }
+            }
+          `}</style>
+          <button
+            className="no-print footprint-submit"
+            onClick={() => window.print()}
+            style={{ margin: "0 0 8px auto" }}
+          >
+            Save as PDF
+          </button>
           <div className="footprint-result-header">
             <div className="footprint-result-main">
               <div className="footprint-report-label">REPORT</div>
