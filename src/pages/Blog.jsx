@@ -1,196 +1,149 @@
 import React from 'react';
 import './Blog.css';
-import blogImage from '../assets/blog.png';
-import blogImage1 from '../assets/blog1.png';
-import blogImage2 from '../assets/blog2.png';
-import blogImage3 from '../assets/blog3.png';
-import blogImage4 from '../assets/blog4.png';
-import blogImage5 from '../assets/blog5.png';
-import blogImage6 from '../assets/blog6.png';
+
+const FEED_JSON_URL = 'https://rss.app/feeds/v1.1/lfgjxjxjR77qIpL0.json';
+
+function cleanText(item) {
+  var raw = item.content_text || item.description || '';
+  return raw.replace(/https?:\/\/lnkd\.in\/\S+/g, '').trim();
+}
+
+function firstLine(text) {
+  var line = text.split('\n')[0].trim();
+  return line.length > 90 ? line.slice(0, 90).trim() + '...' : line;
+}
+
+function mapFeedItem(item, i) {
+  var full = cleanText(item);
+  var link = item.url || item.link || '';
+  if (link && link.indexOf('http') !== 0) link = 'https://' + link;
+  var img = item.image || (item.attachments && item.attachments[0] && item.attachments[0].url) || null;
+  return {
+    id: item.id || item.guid || i,
+    title: firstLine(item.title || full || 'Insight Genesis Update'),
+    fullText: full,
+    excerpt: full.slice(0, img ? 150 : 300).trim() + (full.length > (img ? 150 : 300) ? '...' : ''),
+    date: item.date_published
+      ? new Date(item.date_published).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      : '',
+    image: img,
+    url: link || null
+  };
+}
 
 const Blog = () => {
-  const featuredPost = {
-    id: 0,
-    title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-    excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen, exploring the hidden forces and phenomena that shape our reality. From the microscopic wonders of Nanotex undiscovered gems.',
-    author: 'Community',
-    date: 'April 25, 2025',
-    category: 'Insight',
-    readTime: '12 min read',
-    image: blogImage
-  };
+  const [blogPosts, setBlogPosts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [openPost, setOpenPost] = React.useState(null);
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-      excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen...',
-      author: 'Community',
-      date: 'April 5, 2025',
-      category: 'Community',
-      readTime: '8 min read',
-      image: blogImage1,
-      url: "https://insightgenesis0.wordpress.com/"
-    },
-    {
-      id: 2,
-      title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-      excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen...',
-      author: 'Community',
-      date: 'April 10, 2025',
-      category: 'Community',
-      readTime: '6 min read',
-      image: blogImage2,
-      url: null
-    },
-    {
-      id: 3,
-      title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-      excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen...',
-      author: 'Community',
-      date: 'April 13, 2025',
-      category: 'Community',
-      readTime: '10 min read',
-      image: blogImage3,
-      url: null
-    },
-    {
-      id: 4,
-      title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-      excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen...',
-      author: 'Community',
-      date: 'April 5, 2025',
-      category: 'Community',
-      readTime: '7 min read',
-      image: blogImage4,
-      url: null
-    },
-    {
-      id: 5,
-      title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-      excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen...',
-      author: 'Community',
-      date: 'April 13, 2025',
-      category: 'Community',
-      readTime: '9 min read',
-      image: blogImage5,
-      url: null
-    },
-    {
-      id: 6,
-      title: 'EXPLORING THE WONDERS OF THE UNKNOWN',
-      excerpt: 'Unraveling the Secrets of the Invisible World\nJoin us as we delve into the fascinating realm of the unseen...',
-      author: 'Community',
-      date: 'April 13, 2025',
-      category: 'Community',
-      readTime: '5 min read',
-      image: blogImage6,
-      url: null
-    }
-  ];
+  React.useEffect(() => {
+    let active = true;
+    fetch(FEED_JSON_URL)
+      .then(function (res) {
+        if (!res.ok) throw new Error('Feed not reachable');
+        return res.json();
+      })
+      .then(function (data) {
+        var items = data.items || [];
+        if (active && items.length > 0) setBlogPosts(items.map(mapFeedItem));
+      })
+      .catch(function (e) { console.warn('Blog: feed error -', e.message); })
+      .finally(function () { if (active) setLoading(false); });
+    return function () { active = false; };
+  }, []);
 
-  const categories = ['All', 'Community', 'Insight', 'Products', 'News'];
-  const [selectedCategory, setSelectedCategory] = React.useState('Community');
-
-  const filteredPosts = selectedCategory === 'All' 
-    ? blogPosts 
-    : blogPosts.filter(post => post.category === selectedCategory);
+  var featured = blogPosts[0];
+  var rest = blogPosts.slice(1);
 
   return (
-    <div className="blog">
-      <section className="trending-header">
-        <div className="trending-text">
-          // TRENDING // HOT NEWS // TRENDING
+    <div className="ig-blog">
+      <header className="ig-blog-hero">
+        <p className="ig-blog-eyebrow">FROM THE TEAM</p>
+        <h1 className="ig-blog-heading">Insight Genesis Blog</h1>
+        <p className="ig-blog-sub">Insights on AI, data, and the future of human intelligence.</p>
+      </header>
+
+      {loading && <p className="ig-blog-loading">Loading posts...</p>}
+
+      {!loading && featured && (
+        <div
+          className={'ig-blog-featured' + (featured.image ? '' : ' no-image')}
+          onClick={function () { setOpenPost(featured); }}
+        >
+          {featured.image && (
+            <div className="ig-blog-featured-media">
+              <img src={featured.image} alt={featured.title} />
+            </div>
+          )}
+          <div className="ig-blog-featured-body">
+            <span className="ig-blog-tag">Featured</span>
+            <h2 className="ig-blog-featured-title">{featured.title}</h2>
+            <p className="ig-blog-featured-excerpt">{featured.excerpt}</p>
+            <div className="ig-blog-meta">
+              <span className="ig-blog-date">{featured.date}</span>
+              <span className="ig-blog-readmore">Read article &rarr;</span>
+            </div>
+          </div>
         </div>
-      </section>
+      )}
 
-      <section className="featured-post">
-        <div className="container">
-          <div className="featured-card">
-            <div className="featured-image">
-              <img src={featuredPost.image} alt={featuredPost.title} />
-            </div>
-            <div className="featured-content">
-              <h2 className="featured-title">{featuredPost.title}</h2>
-              <p className="featured-excerpt">{featuredPost.excerpt}</p>
-              <div className="featured-meta">
-                <span className="featured-read-time">{featuredPost.readTime}</span>
-                <span className="featured-date">{featuredPost.date}</span>
-              </div>
-            </div>
-          </div>
-          <div className="carousel-dots">
-            <span className="dot active"></span>
-            <span className="dot"></span>
-            <span className="dot"></span>
-            <span className="dot"></span>
-          </div>
-        </div>
-      </section>
-
-      <section className="blog-content">
-        <div className="container">
-          <div className="blog-header">
-            <h2 className="blog-section-title">BLOGS</h2>
-            <div className="blog-controls">
-              <div className="blog-filters">
-                <span className="category-label">Category</span>
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    className={`filter-btn ${selectedCategory === category ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory(category)}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-              <button className="newest-btn">
-                <span className="sort-icon">⚡</span>
-                Newest First
-              </button>
-            </div>
-          </div>
-
-          <div className="blog-grid">
-            {filteredPosts.map((post) => (
-              <article key={post.id} className="blog-card">
-                <div className="blog-image">
+      <div className="ig-blog-grid">
+        {rest.map(function (post) {
+          return (
+            <div
+              key={post.id}
+              className={'ig-blog-card' + (post.image ? '' : ' no-image')}
+              onClick={function () { setOpenPost(post); }}
+            >
+              {post.image && (
+                <div className="ig-blog-card-media">
                   <img src={post.image} alt={post.title} />
                 </div>
-                <div className="blog-content-area">
-                  <h3 className="blog-title">{post.title}</h3>
-                  <p className="blog-excerpt">{post.excerpt}</p>
-                  <div className="blog-footer">
-                    <div className="blog-meta">
-                      <span className="category-tag">{post.category}</span>
-                      <span className="blog-date">{post.date}</span>
-                    </div>
-                    {post.url ? (
-                      <a
-                        className="read-tag"
-                        href={post.url.startsWith('http') ? post.url : `https://${post.url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Read
-                      </a>
-                    ) : (
-                      <span className="read-tag">Read</span>
-                    )}
-                  </div>
+              )}
+              <div className="ig-blog-card-body">
+                <h3 className="ig-blog-card-title">{post.title}</h3>
+                <p className="ig-blog-card-excerpt">{post.excerpt}</p>
+                <div className="ig-blog-meta">
+                  <span className="ig-blog-date">{post.date}</span>
+                  <span className="ig-blog-readmore">Read &rarr;</span>
                 </div>
-              </article>
-            ))}
-          </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-          <div className="view-more">
-            <button className="view-more-btn">View more</button>
+      {openPost && (
+        <div className="ig-modal-overlay" onClick={function () { setOpenPost(null); }}>
+          <div className="ig-modal" onClick={function (e) { e.stopPropagation(); }}>
+            <button className="ig-modal-close" onClick={function () { setOpenPost(null); }} aria-label="Close">
+              <span>&times;</span>
+            </button>
+            {openPost.image && (
+              <div className="ig-modal-media">
+                <img src={openPost.image} alt={openPost.title} />
+              </div>
+            )}
+            <div className="ig-modal-body">
+              <span className="ig-blog-date">{openPost.date}</span>
+              <h2 className="ig-modal-title">{openPost.title}</h2>
+              <div className="ig-modal-text">
+                {openPost.fullText.split('\n').map(function (para, idx) {
+                  if (!para.trim()) return null;
+                  return <p key={idx}>{para}</p>;
+                })}
+              </div>
+              {openPost.url && (
+                <a className="ig-modal-link" href={openPost.url} target="_blank" rel="noopener noreferrer">
+                  View original on LinkedIn &rarr;
+                </a>
+              )}
+            </div>
           </div>
         </div>
-      </section>
+      )}
     </div>
   );
 };
 
-export default Blog; 
+export default Blog;
