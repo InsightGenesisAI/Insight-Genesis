@@ -119,7 +119,20 @@ const FaceAnalysis = () => {
           method: "POST",
           headers: { addr: walletAddress, type: "1", "Content-Type": "application/json" },
           body: JSON.stringify(d.analysisData),
-        });
+        })
+          .then((res) => res.text())
+          .then((text) => {
+            console.log('Store response:', text);
+            // Tìm IPFS CID (Qm... hoặc bafy...) trong response
+            const cid = text.match(/\b(Qm[1-9A-HJ-NP-Za-km-z]{44}|bafy[a-z2-7]{50,})\b/);
+            if (cid) {
+              console.log('IPFS address:', `ipfs://${cid[1]}`);
+              console.log('IPFS gateway link:', `https://ipfs.io/ipfs/${cid[1]}`);
+            } else {
+              console.log('No IPFS address found in store response');
+            }
+          })
+          .catch((err) => console.error('Store error:', err));
       }
 
       // Kiểm tra origin để bảo mật
