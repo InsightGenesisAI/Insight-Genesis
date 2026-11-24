@@ -103,8 +103,9 @@ const Home = () => {
         <div className="container">
           <img src={iconLoad} alt="load" className="load-icon" />
           <p className="main-description">
-            Insight Genesis is the innovative Web3 arm of Insight Genie, a
-            proven AI industry leader
+            Insight Genesis leverages advanced AI algorithms to predict human
+            behavior, providing valuable insights that can inform data
+            collection strategies.
           </p>
         </div>
       </section>
@@ -112,9 +113,6 @@ const Home = () => {
       {/* Stats Section */}
       <section className="stats">
         <div className="container">
-          <div className="title">
-            <h2>ABOUT INSIGHT GENIE</h2>
-          </div>
           <div className="stats-cards">
             {/* <div className="stat-card">
               <div className="stat-label">Has been in operation</div>
@@ -129,9 +127,8 @@ const Home = () => {
               <div className="stat-value"><span className="parabole-letter">$</span>100,000,000</div>
             </div> */}
             <div className="stat-card">
-              <div className="stat-label">Backed by</div>
               <div className="stat-value">
-                <span className="parabole-letter">HSBC</span>, <span className="parabole-letter">V</span>ynn Capital, <span className="parabole-letter">O</span>rbit <span className="parabole-letter">S</span>tartups
+                <span className="parabole-letter">H</span>uman <span className="parabole-letter">B</span>ehavior <span className="parabole-letter">A</span>I
               </div>
             </div>
             <div className="stat-card">
@@ -146,9 +143,7 @@ const Home = () => {
             </div>
           </div>
           <div className="additional-stats">
-            Building on Insight Genie's Web2 success with proven AI tech-Insight
-            Genesis empowers users to own, control, and monetize their data,
-            revolutionizing self-discovery and success in the Web3 era.  
+            Turning Data into Intelligence. Empowering People through AI.
             &nbsp;
             <img src={iconLoad} alt="arrow" className="load-icon" />           
           </div>          
